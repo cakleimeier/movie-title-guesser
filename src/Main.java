@@ -85,9 +85,7 @@ public class Main {
     /** Handles game logic, calls chooseTitle and createWorkingTitle
      * @return String results, holds the result of the game (win or lose)
      */
-    private static String processTurn(
-
-    ) {
+    private static String processTurn() {
         // This is what gets returned
             String results = "";
         // Set up
@@ -128,10 +126,9 @@ public class Main {
                 if(turn == 0) {
                     chosenTitle = chooseTitle();
 
-                    System.out.println(chosenTitle);
+                    //System.out.println(chosenTitle);
                     // Don't count spaces in chosenTitle when initializing value for lettersRemaining
                     lettersRemaining = chosenTitle.replace(" ", "").length();
-                    System.out.println("original length: " + chosenTitle.length() + " | test length: " + lettersRemaining);
                     workingTitle = createWorkingTitle(
                             turn,
                             chosenTitle,
@@ -141,7 +138,7 @@ public class Main {
                     );
 
                     System.out.println(intro);
-                    System.out.println(workingTitle);
+                    System.out.println(workingTitle + "\n");
                     turn++;
                 } else if (lettersRemaining != 0) {
                      /* FLOW
@@ -182,11 +179,11 @@ public class Main {
 
                         // Check if guessed letter is correct
                         if(!chosenTitle.toLowerCase().contains(selectedCharacter.toLowerCase())) {
-                            System.out.println("Sorry, " + selectedCharacter + " is not in the title.");
+                            System.out.println("Sorry, " + selectedCharacter + " is not in the title.\n");
                             incorrectCharacters += selectedCharacter;
                             incorrectGuessesLeft -= 1;
                         } else {
-                            System.out.println("Good guess: " + selectedCharacter + " is in the title!");
+                            System.out.println("Good guess: " + selectedCharacter + " is in the title!\n");
                             correctCharacters += selectedCharacter;
                         }
 
@@ -197,8 +194,8 @@ public class Main {
                                 selectedCharacter,
                                 correctCharacters
                         );
-                        System.out.println(workingTitle);
-                        System.out.println("Turn: " + turn);
+                        System.out.println(workingTitle + "\n");
+                        System.out.println("Turn: " + turn + "\n");
                         // Count number of underscores in workingTitle to get lettersRemaining
                         lettersRemaining = workingTitle.length() - workingTitle.replace("_", "").length();
                         turn++;
