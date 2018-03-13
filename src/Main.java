@@ -10,29 +10,21 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Getting the title
-            int incorrectGuessesLeft = 11;
-            int lettersRemaining = 100;
-            int turn = 0;
-            String guessedCharacters = "";
-            String incorrectCharacters = "";
-            String correctCharacters= "";
-            String selectedCharacter = "";
+        // Setting up
             String result = "";
+            int points = 0;
+
 
         // Playing the game
-            result = processTurn(
-                    lettersRemaining,
-                    guessedCharacters,
-                    correctCharacters,
-                    incorrectCharacters,
-                    incorrectGuessesLeft,
-                    turn
-            );
+            result = processTurn();
             System.out.println(result);
 
     }
 
+    /***
+     * Selects random title from movie-titles.txt file
+     * @return String chosenTitle, string containing the full title that will be guessed
+     */
     private static String chooseTitle() {
         String chosenTitle = "";
         try {
@@ -90,49 +82,44 @@ public class Main {
         return workingTitle;
     }
 
-    /** NOTES: need to refine input handling
-     * (don't allow user to repeat characters or select whitespace, non-letter characters)
-     * and lettersRemaining (don't include whitespace)
-     * Handles game logic, calls chooseTitle and createWorkingTitle
-     * @param lettersRemaining int, number of letters in title that are left to guess
-     * @param guessedCharacters String, characters guessed so far
-     * @param correctCharacters String, characters guessed that are in the title
-     * @param incorrectCharacters String, characters guessed that are not in the title
-     * @param incorrectGuessesLeft int, number of incorrect guesses remaining
-     * @param turn int, the current round number
+    /** Handles game logic, calls chooseTitle and createWorkingTitle
      * @return String results, holds the result of the game (win or lose)
      */
-    public static String processTurn(
-            int lettersRemaining,
-            String guessedCharacters,
-            String correctCharacters,
-            String incorrectCharacters,
-            int incorrectGuessesLeft,
-            int turn
+    private static String processTurn(
+
     ) {
         // This is what gets returned
-        String results = "";
+            String results = "";
+        // Set up
+            String chosenTitle = "";
+            int lettersRemaining = 100;
+            String guessedCharacters = "";
+            String correctCharacters = "";
+            String incorrectCharacters = "";
+            int incorrectGuessesLeft = 11;
+            int turn = 0;
+            String intro = "RULES \n\n" +
+                    "Guess the secret movie title!\n" +
+                    "Each turn, you may guess ONE (1) letter. If that letter is present in the secret movie title, it will be displayed in the title.\n" +
+                    "If that letter is NOT present in the secret movie title, you will lose a point. If you lose 10 points, you lose the game!\n" +
+                    "At each turn, you will be presented with the secret title, including any correct letters you've guessed, and a list of incorrect letters you've guessed." +
+                    "\n\n";
 
-        // on first turn, explain game
-        // on every turn after, IF there is >= 1 incorrect guess and 1 letter left,
-        // display this information:
-        // working title, incorrect guesses left, incorrect letters, "guess" interface
-        // then, take user input, pass it to createWorkingTitle to generate the working title,
-        // run the game logic, display it again
-        String chosenTitle = "";
-        String intro = "RULES \n\n" +
-                "Guess the secret movie title!\n" +
-                "Each turn, you may guess ONE (1) letter. If that letter is present in the secret movie title, it will be displayed in the title.\n" +
-                "If that letter is NOT present in the secret movie title, you will lose a point. If you lose 10 points, you lose the game!\n" +
-                "At each turn, you will be presented with the secret title, including any correct letters you've guessed, and a list of incorrect letters you've guessed." +
-                "\n\n";
+            String guessLine = "Guess a letter.\n";
+            String selectedCharacter = "";
+            String workingTitle = "";
 
-        String guessLine = "Guess a letter.\n";
-        String selectedCharacter = "";
-        String workingTitle = "";
-
-
+        /* FLOW
+            Run while the user still has points remaining.
+            on first turn, explain game
+            on every turn after, IF there is >= 1 incorrect guess and 1 letter left,
+            display this information:
+            working title, incorrect guesses left, incorrect letters, "guess" interface
+            then, take user input, pass it to createWorkingTitle to generate the working title,
+            run the game logic, display it again
+         */
         while(incorrectGuessesLeft > 0) {
+            // If the user still has points left
             if(incorrectGuessesLeft > 1) {
                 String incorrectLettersLine = "Incorrect letters: " + incorrectCharacters + "\n";
                 String incorrectGuessesLeftLine = "Points remaining: " + (incorrectGuessesLeft - 1) + "\n";
@@ -157,14 +144,14 @@ public class Main {
                     System.out.println(workingTitle);
                     turn++;
                 } else if (lettersRemaining != 0) {
-             /* FLOW
-                After game is explained,
-                Show working title, information, and guess a letter prompt
-                User guesses letter
-                Results are shown,
-                New working title and information is shown,
-                Turn is incremented
-             */
+                     /* FLOW
+                        After game is explained,
+                        Show working title, information, and guess a letter prompt
+                        User guesses letter
+                        Results are shown,
+                        New working title and information is shown,
+                        Turn is incremented
+                     */
                     System.out.println(incorrectGuessesLeftLine);
                     System.out.println(incorrectLettersLine);
 
@@ -173,10 +160,10 @@ public class Main {
                     Scanner scanner = new Scanner(System.in);
                     String testChar = scanner.nextLine();
 
-                /* CHECK INPUT:
-                    If it's the same as a previously-guessed character, don't allow it
-                    If it's whitespace, don't allow it
-                 */
+                    /* CHECK INPUT:
+                        If it's the same as a previously-guessed character, don't allow it
+                        If it's whitespace, don't allow it
+                     */
                     if(guessedCharacters.contains(testChar.toLowerCase())) {
                         System.out.println("It looks like you've already guessed " + selectedCharacter +".  Please choose another letter. \n");
                         System.out.println(guessLine);
@@ -193,7 +180,7 @@ public class Main {
                         selectedCharacter = testChar;
                         guessedCharacters += selectedCharacter.toLowerCase();
 
-                        // check if guessed letter is correct
+                        // Check if guessed letter is correct
                         if(!chosenTitle.toLowerCase().contains(selectedCharacter.toLowerCase())) {
                             System.out.println("Sorry, " + selectedCharacter + " is not in the title.");
                             incorrectCharacters += selectedCharacter;
