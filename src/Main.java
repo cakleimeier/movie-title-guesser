@@ -160,30 +160,51 @@ public class Main {
                 // GUESS
                 System.out.println(guessLine);
                 Scanner scanner = new Scanner(System.in);
-                selectedCharacter = scanner.nextLine();
-                guessedCharacters += selectedCharacter;
-                System.out.println("You guessed: " + selectedCharacter + "\n");
+                String testChar = scanner.nextLine();
 
-                // check if guessed letter is correct
-                if(!chosenTitle.toLowerCase().contains(selectedCharacter)) {
-                    System.out.println("Sorry, " + selectedCharacter + " is not in the title.");
-                    incorrectCharacters += selectedCharacter;
-                    incorrectGuessesLeft--;
+                /* CHECK INPUT:
+                    If it's the same as a previously-guessed character, don't allow it
+                    If it's whitespace, don't allow it
+                 */
+                if(guessedCharacters.contains(testChar)) {
+                    System.out.println("It looks like you've already guessed " + selectedCharacter +".  Please choose another letter. \n");
+                    System.out.println(guessLine);
+
+                } else if (testChar.matches("[^A-Za-z]+")) {
+                    System.out.println("That's a non-letter character. Please choose a letter.\n");
+                    System.out.println(guessLine);
+
+                } else if (testChar.length() > 1) {
+                    System.out.println("That's too long. Please choose only ONE letter.\n");
+                    System.out.println(guessLine);
+
                 } else {
-                    System.out.println("Good guess: " + selectedCharacter + " is in the title!");
-                    correctCharacters += selectedCharacter;
+                    selectedCharacter = testChar;
+                    guessedCharacters += selectedCharacter;
+                    System.out.println("You guessed: " + selectedCharacter + "\n");
+
+                    // check if guessed letter is correct
+                    if(!chosenTitle.toLowerCase().contains(selectedCharacter)) {
+                        System.out.println("Sorry, " + selectedCharacter + " is not in the title.");
+                        incorrectCharacters += selectedCharacter;
+                        incorrectGuessesLeft--;
+                    } else {
+                        System.out.println("Good guess: " + selectedCharacter + " is in the title!");
+                        correctCharacters += selectedCharacter;
+                    }
+
+                    workingTitle = createWorkingTitle(
+                            turn,
+                            chosenTitle,
+                            workingTitle,
+                            selectedCharacter,
+                            correctCharacters
+                    );
+                    System.out.println("Line 177: " + workingTitle);
+                    System.out.println("Turn: " + turn);
+                    turn++;
                 }
 
-                workingTitle = createWorkingTitle(
-                        turn,
-                        chosenTitle,
-                        workingTitle,
-                        selectedCharacter,
-                        correctCharacters
-                );
-                System.out.println("Line 177: " + workingTitle);
-                System.out.println("Turn: " + turn);
-                turn++;
             } else {
                 // YOU WON!
                 System.out.println("Congratulations! You've won!");
