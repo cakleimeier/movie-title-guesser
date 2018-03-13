@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Random;
 import java.io.File;
@@ -18,7 +19,7 @@ public class Main {
             String selectedCharacter = "";
 
 
-        processTurn(selectedCharacter,
+        processTurn(
                 lettersRemaining,
                 guessedCharacters,
                 correctCharacters,
@@ -67,19 +68,15 @@ public class Main {
     ) {
         String [] currentTitleArray = currentTitle.toLowerCase().split("");
         String [] workingTitleArray = workingTitle.toLowerCase().split("");
-        String [] correctCharactersArray = correctCharacters.split("");
 
         if (turn == 0) {
             workingTitle = currentTitle.replaceAll("\\S", "_");
         } else {
-            // maybe a regular expression to match any correct letters?
-            // maybe a loop to catch each indexof correct letters?
-            // maybe nested loops to catch any correct letters
+            // use previous version of workingTitle and just fill it in with selectedCharacter
             for(int i = 0; i < currentTitleArray.length; i++) {
-                for(int j = 0; j < correctCharactersArray.length; j++) {
-                    if(currentTitleArray[i] == correctCharactersArray[j]) {
-                        workingTitleArray[i] = correctCharactersArray[j];
-                    }
+                if(currentTitleArray[i].equals(selectedCharacter)) {
+                    workingTitleArray[i] = selectedCharacter;
+                    correctCharacters += selectedCharacter;
                 }
             }
 
@@ -89,8 +86,19 @@ public class Main {
         return workingTitle;
     }
 
+    /** NOTES: need to refine input handling
+     * (don't allow user to repeat characters or select whitespace, non-letter characters)
+     * and lettersRemaining (don't include whitespace)
+     * Handles game logic, calls chooseTitle and createWorkingTitle
+     * @param lettersRemaining int, number of letters in title that are left to guess
+     * @param guessedCharacters String, characters guessed so far
+     * @param correctCharacters String, characters guessed that are in the title
+     * @param incorrectCharacters String, characters guessed that are not in the title
+     * @param incorrectGuessesLeft int, number of incorrect guesses remaining
+     * @param turn int, the current round number
+     * @return something, don't know what yet
+     */
     public static String[] processTurn(
-            String selectedCharacter,
             int lettersRemaining,
             String guessedCharacters,
             String correctCharacters,
@@ -114,16 +122,17 @@ public class Main {
                 "\n\n";
 
         String guessLine = "Guess a letter.\n";
+        String selectedCharacter = "";
+        String incorrectLettersLine = "Incorrect letters: " + incorrectCharacters + "\n";
+        String incorrectGuessesLeftLine = "Points remaining: " + incorrectGuessesLeft + "\n";
+        String workingTitle = "";
 
 
         while(incorrectGuessesLeft > 1) {
-            String incorrectLettersLine = "Incorrect letters: " + incorrectCharacters + "\n";
-            String incorrectGuessesLeftLine = "Points remaining: " + incorrectGuessesLeft + "\n";
-            String workingTitle = "";
-
+            // if it's the first turn, explain the game
             if(turn == 0) {
-                // if it's the first turn, explain the game
                 chosenTitle = chooseTitle();
+                System.out.println(chosenTitle);
                 lettersRemaining = chosenTitle.length();
                 workingTitle = createWorkingTitle(
                     turn,
@@ -133,43 +142,52 @@ public class Main {
                     correctCharacters
                 );
 
-                System.out.println(chosenTitle);
-                //System.out.println(workingTitle);
                 System.out.println(intro);
-            }
+                System.out.println(workingTitle);
+                turn++;
+            } else if (lettersRemaining > 0) {
+             /* FLOW
+                After game is explained,
+                Show working title, information, and guess a letter prompt
+                User guesses letter
+                Results are shown,
+                New working title and information is shown,
+                Turn is incremented
+             */
+                System.out.println(incorrectGuessesLeftLine);
+                System.out.println(incorrectLettersLine);
 
-            System.out.println(workingTitle);
-            System.out.println(incorrectGuessesLeftLine);
-            System.out.println(incorrectLettersLine);
-            System.out.println(guessLine);
+                // GUESS
+                System.out.println(guessLine);
+                Scanner scanner = new Scanner(System.in);
+                selectedCharacter = scanner.nextLine();
+                guessedCharacters += selectedCharacter;
+                System.out.println("You guessed: " + selectedCharacter + "\n");
 
-            Scanner scanner = new Scanner(System.in);
-            selectedCharacter = scanner.nextLine();
-            guessedCharacters += selectedCharacter;
+                // check if guessed letter is correct
+                if(!chosenTitle.toLowerCase().contains(selectedCharacter)) {
+                    System.out.println("Sorry, " + selectedCharacter + " is not in the title.");
+                    incorrectCharacters += selectedCharacter;
+                    incorrectGuessesLeft--;
+                } else {
+                    System.out.println("Good guess: " + selectedCharacter + " is in the title!");
+                    correctCharacters += selectedCharacter;
+                }
 
-            System.out.println("You guessed: " + selectedCharacter + "\n");
-
-            // check if guessed letter is correct
-            if(!chosenTitle.toLowerCase().contains(selectedCharacter)) {
-                System.out.println("Sorry, " + selectedCharacter + " is not in the title.");
-                incorrectCharacters += selectedCharacter;
-                incorrectGuessesLeft--;
+                workingTitle = createWorkingTitle(
+                        turn,
+                        chosenTitle,
+                        workingTitle,
+                        selectedCharacter,
+                        correctCharacters
+                );
+                System.out.println("Line 177: " + workingTitle);
+                System.out.println("Turn: " + turn);
+                turn++;
             } else {
-                System.out.println("Good guess: " + selectedCharacter + " is in the title!");
-                correctCharacters += selectedCharacter;
+                // YOU WON!
+                System.out.println("Congratulations! You've won!");
             }
-
-            workingTitle = createWorkingTitle(
-                    turn,
-                    chosenTitle,
-                    workingTitle,
-                    selectedCharacter,
-                    correctCharacters
-            );
-
-            System.out.println(workingTitle);
-            System.out.println("Turn: " + turn);
-            turn++;
         }
 
 
